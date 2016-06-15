@@ -1,0 +1,50 @@
+heat_template_version: 2015-04-30
+description: Auto scaling group for Spinnaker
+parameters:
+  flavor:
+    type: string
+    description: flavor used by the web servers
+  image:
+    type: string
+    description: Image used for servers
+  internal_port:
+    type: string
+    description: internal app port for each server
+  max_size:
+    type: number
+    description: maximum cluster size
+  min_size:
+    type: number
+    description: minimum cluster size
+  network:
+    type: string
+    description: Network used by the servers
+  pool_id:
+    type: string
+    description: Load balancer to use for this group
+  region:
+    type: string
+    description: region
+  security_groups:
+    type: comma_delimited_list
+    description: Name of the wordpress DB
+    default: wordpress
+  sub_template:
+    type: string
+    description: template for scaled resources
+resources:
+  asg:
+    type: OS::Heat::AutoScalingGroup
+    properties:
+      min_size: {get_param: min_size}
+      max_size: {get_param: max_size}
+      resource:
+        type: OS::Heat::Stack
+        properties:
+          context: {region_name: {get_param: region}}
+          parameters: {flavor: {get_param: flavor}, image: {get_param: image}, internal_port: {get_param: internal_port}, network: {get_param: network}, pool_id: {get_param: pool_id}, security_groups: {get_param: security_groups}}
+          template: {get_param: sub_template}
+          timeout: 15
+outputs:
+  OS::stack_id:
+    value: {get_resource: asg}
