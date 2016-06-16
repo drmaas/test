@@ -16,7 +16,7 @@ parameters:
   min_size:
     type: number
     description: minimum cluster size
-  network:
+  network_id:
     type: string
     description: Network used by the servers
   pool_id:
@@ -24,8 +24,7 @@ parameters:
     description: Load balancer to use for this group
   security_groups:
     type: comma_delimited_list
-    description: Name of the wordpress DB
-    default: wordpress
+    description: security groups to use
 resources:
   asg:
     type: OS::Heat::AutoScalingGroup
@@ -38,7 +37,7 @@ resources:
           flavor: {get_param: flavor}
           image: {get_param: image}
           internal_port: {get_param: internal_port}
-          network: {get_param: network}
+          network_id: {get_param: network_id}
           pool_id: {get_param: pool_id}
           security_groups: {get_param: security_groups}
 outputs:

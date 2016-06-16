@@ -10,7 +10,7 @@ parameters:
   internal_port:
     type: string
     description: internal port on which each server will listen
-  network:
+  network_id:
     type: string
     description: Network used by each server
   pool_id:
@@ -25,7 +25,7 @@ resources:
     type: OS::Neutron::Port
     properties:
       admin_state_up: true
-      network_id: { get_param: network }
+      network_id: { get_param: network_id }
       security_groups: {get_param: security_groups}
   server:
     type: OS::Nova::Server

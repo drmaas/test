@@ -37,6 +37,20 @@ object Openstack4jTest {
         val name = "asg.yaml"
         val subname = "asg_resource.yaml"
 
+        val region = "TTEOSCORE1"
+        val stackName = "test-asg-1"
+        val disableRollback = false
+        val timeoutMins = 15L
+
+        val instanceType = "m1.small"
+        val image = "ubuntu-latest"
+        val internalPort = "8000"
+        val maxSize = "5"
+        val minSize = "3"
+        val networkId = "77bb3aeb-c1e2-4ce5-8d8f-b8e9128af651"
+        val poolId = "87077f97-83e7-4ea1-9ca9-40dc691846db"
+        val securityGroups = "sg-heat-test-1"
+
         val template = IOUtils.toString(javaClass.getClassLoader().getResourceAsStream(name))
         println(template)
         val subtemplate = IOUtils.toString(javaClass.getClassLoader().getResourceAsStream(subname))
@@ -49,31 +63,27 @@ object Openstack4jTest {
 
         client.heat().templates().validateTemplate(template)
 
-        //network is PRD-spinnakeropenstack_network
-        //pool is test-pool-1465927797666
         val params = mapOf<String, String>(
-                "flavor" to "m1.small",
-                "image" to "ubuntu-latest",
-                "internal_port" to "8000",
-                "max_size" to "5",
-                "min_size" to "3",
-                "network" to "77bb3aeb-c1e2-4ce5-8d8f-b8e9128af651",
-                "pool_id" to "87077f97-83e7-4ea1-9ca9-40dc691846db",
-                "security_groups" to "sg-heat-test-1"
+                "flavor" to instanceType,
+                "image" to image,
+                "internal_port" to internalPort,
+                "max_size" to maxSize,
+                "min_size" to minSize,
+                "network_id" to networkId,
+                "pool_id" to poolId,
+                "security_groups" to securityGroups
         )
 
         val create = Builders.stack()
-                .name("test-asg-1")
+                .name(stackName)
                 .template(template)
                 .parameters(params)
-                .files(mapOf("asg_resource.yaml" to subtemplate))
-                .disableRollback(false)
-                .timeoutMins(15)
+                .files(mapOf(subname to subtemplate))
+                .disableRollback(disableRollback)
+                .timeoutMins(timeoutMins)
                 .build()
-        val stack = client.useRegion("TTEOSCORE1").heat().stacks().create(create)
+        val stack = client.useRegion(region).heat().stacks().create(create)
 
         println(stack.toString())
-
     }
-
 }
