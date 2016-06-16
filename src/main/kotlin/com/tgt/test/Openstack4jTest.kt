@@ -34,8 +34,8 @@ object Openstack4jTest {
 //        client.useRegion("TTEOSCORE1")
 //        println(client.compute().securityGroups().get("556f7e21-82d1-437c-9318-5ba9c73d27f9"))
 
-        val name = "asg.yml"
-        val subname = "asg_resource.yml"
+        val name = "asg.yaml"
+        val subname = "asg_resource.yaml"
 
         val template = IOUtils.toString(javaClass.getClassLoader().getResourceAsStream(name))
         println(template)
@@ -59,37 +59,18 @@ object Openstack4jTest {
                 "min_size" to "3",
                 "network" to "77bb3aeb-c1e2-4ce5-8d8f-b8e9128af651",
                 "pool_id" to "87077f97-83e7-4ea1-9ca9-40dc691846db",
-                "region" to "TTEOSCORE1",
-                "security_groups" to "sg-heat-test-1",
-                "sub_template" to subtemplate
+                "security_groups" to "sg-heat-test-1"
         )
 
         val create = Builders.stack()
                 .name("test-asg-1")
                 .template(template)
                 .parameters(params)
+                .files(mapOf("asg_resource.yaml" to subtemplate))
                 .disableRollback(false)
                 .timeoutMins(15)
                 .build()
         val stack = client.useRegion("TTEOSCORE1").heat().stacks().create(create)
-
-//        val params = mapOf<String, String>(
-//                "flavor" to "m1.small",
-//                "image" to "ubuntu-latest",
-//                "internal_port" to "8000",
-//                "network" to "77bb3aeb-c1e2-4ce5-8d8f-b8e9128af651",
-//                "pool_id" to "af5d398e-5cd6-4048-908d-db4b89744d9e",
-//                "security_groups" to "sg-heat-test-1"
-//        )
-//
-//        val create = Builders.stack()
-//                .name("test-asg-1-subtemplate")
-//                .template(subtemplate)
-//                .parameters(params)
-//                .disableRollback(false)
-//                .timeoutMins(15)
-//                .build()
-//        val stack = client.useRegion("TTEOSCORE1").heat().stacks().create(create)
 
         println(stack.toString())
 

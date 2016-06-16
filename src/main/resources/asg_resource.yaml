@@ -10,12 +10,12 @@ parameters:
   internal_port:
     type: string
     description: internal port on which each server will listen
-  pool_id:
-    type: string
-    description: Pool to contact
   network:
     type: string
     description: Network used by each server
+  pool_id:
+    type: string
+    description: Pool to contact
   security_groups:
     type: comma_delimited_list
     description: security groups associate to each server
